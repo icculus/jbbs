@@ -19,20 +19,15 @@ public class OnlineSession implements Runnable
     protected Thread sessionThread;          // All work is done in this thread.
     protected JBBSUser user = null;
 
-    public SocketStream getSocketStream()
-    {
-        return(io);
-    } // getSocketStream
 
-
+        /**
+         *  Constructor; Builds this session, spins threads, and gets
+         *   it all going...
+         *
+         *     @param socket Socket connected to another user.
+         *     @throw LostCarrierException if connection to user was lost.
+         */
     public OnlineSession(Socket socket) throws LostCarrierException
-    /**
-     *  Constructor; Builds this session, spins threads, and gets
-     *   it all going...
-     *
-     *     params : s == socket connected to another user.
-     *    returns : Constructor; void.
-     */
     {
         //!!!socket.setSoTimeout((JBBSConfig.idleTimeout * 60) * 1000);
 
@@ -61,6 +56,27 @@ public class OnlineSession implements Runnable
     } // Constructor
 
 
+        /**
+         * Get the SocketStream associated with this OnlineSession.
+         *  Use this if the built-in i/o methods (getYN(), etc) don't
+         *  suffice for your needs.
+         *
+         *  @return The SocketStream associated with this OnlineSession.
+         */
+    public SocketStream getSocketStream()
+    {
+        return(io);
+    } // getSocketStream
+
+
+        /**
+         * Asks the user a Yes, No question.
+         *
+         *   @param prompt Question to ask user
+         *  @return <em>true</em> if user answered yes, <em>false</em>
+         *          if the user answered no.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public boolean getYN(String prompt) throws LostCarrierException
     {
         byte readByte;
@@ -88,6 +104,16 @@ public class OnlineSession implements Runnable
     } // getYN
 
 
+        /**
+         * Dump a file to this session's SocketStream.
+         *
+         *   @param fileName file to send. This is just blindly sent,
+         *          so you'll probably not want to use this for fancy
+         *          file transfer.
+         *  @return <em>true</em> if entire file was sucessfully sent,
+         *          <em>false</em> if there were any problems.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public boolean putFile(String fileName) throws LostCarrierException
     {
         boolean retVal = true;
@@ -125,14 +151,14 @@ public class OnlineSession implements Runnable
     } // putFile
 
 
+        /**
+         * Get a user name and password from remote client. Check it
+         *  for validity.
+         *
+         *   @return <em>true</em> if valid login, <em>false</em> otherwise.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     protected boolean login() throws LostCarrierException
-    /**
-     * Get a user name and password from remote client. Check it
-     *  for validity.
-     *
-     *    params : void.
-     *   returns : boolean true if valid login, boolean false otherwise.
-     */
     {
         byte[] userName;
         String password;
@@ -165,17 +191,17 @@ public class OnlineSession implements Runnable
     } // login
 
 
+        /**
+         *  This method tries to find the most functional emulation
+         *   available to the remote client, and creates a SocketStream
+         *   deriviative based on it.
+         *
+         *   @param socket Socket for communication with client.
+         *  @return SocketStream for all further communication with the client.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     protected SocketStream checkEmulation(Socket socket)
                                    throws LostCarrierException
-    /**
-     *  This method tries to find the most functional emulation
-     *   available to the remote client, and creates a SocketStream
-     *   deriviative based on it.
-     *
-     *    params : socket == socket for communication with client.
-     *   returns : SocketStream == use this retval for all further
-     *                             communication with the client.
-     */
     {
         SocketStream retVal;
         InputStream in = null;
@@ -205,13 +231,13 @@ public class OnlineSession implements Runnable
     } // checkEmulation
 
 
+        /**
+         *  Kick off user, and close socket.
+         *
+         *    params : void.
+         *   returns : void.
+         */
     protected void closeConnection()
-    /**
-     *  Kick off user, and close socket.
-     *
-     *    params : void.
-     *   returns : void.
-     */
     {
         if (io != null)
         {
@@ -221,6 +247,9 @@ public class OnlineSession implements Runnable
     } // closeConnection
 
 
+        /**
+         * Shutdown this session. Kicks off user, kills threads, etc...
+         */
     public void shutdown()
     {
         if (sessionThread != null)
@@ -233,11 +262,17 @@ public class OnlineSession implements Runnable
     } // finalize
 
 
+        /**
+         * Pause until user hits a key. This is good for
+         *  scrolling multiple pages of text.
+         *
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     protected void pause() throws LostCarrierException
     {
         int i;
         int curLine = 0;
-        String pauseMsg = "Hit a key, nootch!";
+        String pauseMsg = "Hit a key";
 
         io.sendln();
 
@@ -256,7 +291,7 @@ public class OnlineSession implements Runnable
 
             io.setPosXY(1, curLine);
         } // if
-        else
+        else        // try anyhow...
         {
             for (i = 0; i < pauseMsg.length(); i++)
                 io.send(ASCII_BACKSPACE);
@@ -270,13 +305,12 @@ public class OnlineSession implements Runnable
     } // pause
 
 
+        /**
+         *  This gets called after the user has successfully logged on.
+         *
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     protected void sessionIntro() throws LostCarrierException
-    /**
-     *  This gets called after the user has successfully logged on.
-     *
-     *     params : void.
-     *    returns : void.
-     */
     {
         if (JBBSConfig.useAutoPosts)
             AutoPosts.doAutoPosts(this);
@@ -286,6 +320,12 @@ public class OnlineSession implements Runnable
     } // sessionIntro
 
 
+        /**
+         * Code drops here after a successful connection has been
+         *  made, and a terminal type has been configured.
+         *
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     protected void beginSession() throws LostCarrierException
     {
         byte readIn;
@@ -302,14 +342,11 @@ public class OnlineSession implements Runnable
 
         // Runnable implementation...
 
+        /**
+         *  This is just here so the user's JBBS session runs in a separate
+         *   thread.
+         */
     public void run()
-    /**
-     *  This is just here so the user's JBBS session runs in a separate
-     *   thread.
-     *
-     *     params : void.
-     *    returns : void, then thread terminates.
-     */
     {
         try
         {
