@@ -114,16 +114,16 @@ public final class JBBS
                 Thread.yield();
 
             readByte = (byte) System.in.read();   // chars? !!!
-            if (readByte == '\b')            // backspace?
+            if (readByte == (byte) '\b')          // backspace?
             {
                 if (bytesRead > 0)
                 {
-                    inLine[bytesRead] = ' ';
+                    inLine[bytesRead] = (byte) ' ';
                     bytesRead--;
                 } // if
             } // if
 
-            else if ((readByte == '\r') || (readByte == '\n'))
+            else if ((readByte == (byte) '\r') || (readByte == (byte) '\n'))
             {
                 getOut = true;
                 System.in.skip(System.in.available());   // clear stream...
@@ -357,7 +357,7 @@ public final class JBBS
         } // if
         System.out.println("It's cool.");
 
-        System.out.print("Revving up the Connection Manager...");
+        System.out.print("Revving up the ConnectionManager...");
         try
         {
             new ConnectionManager();

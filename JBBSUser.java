@@ -157,7 +157,7 @@ public class JBBSUser
            //  record will look like on disk.
 
        for (i = 0; i < LEN_RECORD; i++)     // initialize array.
-           outputter[i] = ' ';
+           outputter[i] = (byte) ' ';
 
        rc = user.handle.getBytes();
        System.arraycopy(rc, 0, outputter, 0, rc.length);

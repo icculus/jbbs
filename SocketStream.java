@@ -18,6 +18,9 @@ public abstract class SocketStream
 {
         // Constants...
     public static final byte ASCII_BACKSPACE = 8;
+    public static final byte ASCII_ESCAPE    = 27;
+    public static final byte ASCII_CR        = 13;
+    public static final byte ASCII_LF        = 10;
 
     public static final int TERMCOLOR_BLACK     = 0;
     public static final int TERMCOLOR_RED       = 1;
@@ -290,7 +293,7 @@ public abstract class SocketStream
                     } // if
                     break;
 
-                case '\r':
+                case ASCII_CR:
                     sendln();
                     getOut = true;
                     break;
