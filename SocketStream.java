@@ -58,17 +58,17 @@ public abstract class SocketStream
     } // Constructor
 
 
+        /**
+         * This methods tries to log any I/O problems, then throws the
+         *  exception, so other routines may deal with the exception as
+         *  necessary.
+         *
+         *   @param e An IOException generated through network woes.
+         *   @param details Text of error details: method exception called in.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public static void handleIOException(IOException e, String details)
                                         throws LostCarrierException
-    /**
-     *   This methods tries to log any I/O problems, then throws the
-     *    exception, so other routines may deal with the exception as
-     *    necessary.
-     *
-     *       params : e == an IOException generated through network woes.
-     *      returns : void, but always...
-     *       throws : LostCarrierException
-     */
     {
         String errStr = e.getMessage();
 
@@ -79,14 +79,24 @@ public abstract class SocketStream
     } // handleIOException
 
 
+        /**
+         *  Sends a carriage return/line feed (a "newline").
+         *
+         *   @throw LostCarrierException if connection to user was lost.
+         */
+    public void sendln() throws LostCarrierException
+    {
+        send("\r\n");
+    } // sendln (void)
+
+
+        /**
+         *  Send a string of text to the remote user.
+         *
+         *   @param str String to transmit to remote client.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public void send(String str) throws LostCarrierException
-    /**
-     *  Send a string of text to the remote user.
-     *
-     *     params : str == String to transmit to remote client.
-     *    returns : void.
-     *     throws : LostCarrierException == on network errors...
-     */
     {
         try
         {
@@ -99,12 +109,24 @@ public abstract class SocketStream
     } // send (takes String)
 
 
+        /**
+         *  Send a string of text to the remote user, with newline appended.
+         *
+         *   @param str String to transmit to remote client.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public void sendln(String str) throws LostCarrierException
     {
         send(str + "\r\n");
     } // sendln (takes String)
 
 
+        /**
+         *  Send one byte to the remote user.
+         *
+         *   @param b Byte to transmit.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public void send(byte b) throws LostCarrierException
     {
         try
@@ -118,6 +140,12 @@ public abstract class SocketStream
     } // send (one byte)
 
 
+        /**
+         *  Send one byte to the remote user, followed by a newline.
+         *
+         *   @param b Byte to transmit.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public void sendln(byte b) throws LostCarrierException
     {
         send(b);
@@ -125,28 +153,42 @@ public abstract class SocketStream
     } // sendln (one byte)
 
 
+        /**
+         *  Send one char to the remote user. It is cast to a byte before
+         *   sending, so you still only get one byte.
+         *
+         *   @param ch Char (byte) to transmit.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public void send(char ch) throws LostCarrierException
     {
         send((byte) ch);
     } // send (one char, reduced to a byte)
 
 
+        /**
+         *  Send one char to the remote user. It is cast to a byte before
+         *   sending, so you still only get one byte.
+         *
+         *  A newline is also sent.
+         *
+         *   @param ch Char (byte) to transmit.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public void sendln(char ch) throws LostCarrierException
     {
         sendln((byte) ch);
     } // sendln (one char, reduced to a byte)
 
 
+        /**
+         *  Send the first len bytes in an array to the remote user.
+         *
+         *   @param bytes Bytes to transmit to remote client.
+         *   @param len Number of bytes to send.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public void send(byte[] bytes, int len) throws LostCarrierException
-    /**
-     *  Send an first len bytes in an array to the remote user.
-     *
-     *     params : bytes == Bytes to transmit to remote client.
-     *                       this sends bytes.length bytes.
-     *              len   == number of bytes to send.
-     *    returns : void.
-     *     throws : LostCarrierException == on network errors...
-     */
     {
         try
         {
@@ -159,15 +201,14 @@ public abstract class SocketStream
     } // send (takes first x bytes in array of bytes)
 
 
+        /**
+         *  Send an array of bytes to the remote user.
+         *
+         *   @param bytes Bytes to transmit to remote client.
+         *                <em>bytes.length</em> bytes will be sent.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public void send(byte[] bytes) throws LostCarrierException
-    /**
-     *  Send an array of bytes to the remote user.
-     *
-     *     params : bytes == Bytes to transmit to remote client.
-     *                       this sends bytes.length bytes.
-     *    returns : void.
-     *     throws : LostCarrierException == on network errors...
-     */
     {
         try
         {
@@ -180,6 +221,15 @@ public abstract class SocketStream
     } // send (takes byte[])
 
 
+        /**
+         *  Send an array of bytes to the remote user.
+         *
+         *  A newline is also sent.
+         *
+         *   @param bytes Bytes to transmit to remote client.
+         *                <em>bytes.length</em> bytes will be sent.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public void sendln(byte[] bytes) throws LostCarrierException
     {
         send(bytes);
@@ -187,26 +237,13 @@ public abstract class SocketStream
     } // sendln (takes byte[])
 
 
-    public void sendln() throws LostCarrierException
-    /**
-     *  Sends a carriage return/line feed.
-     *
-     *    params : void.
-     *   returns : void.
-     */
-    {
-        send("\r\n");
-    } // sendln (void)
-
-
+        /**
+         * Retrieve one byte from the socket. Blocks until it retrieves it.
+         *
+         *   @returns Byte from socket.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public byte recv() throws LostCarrierException
-    /**
-     *   Return one byte from the socket.
-     *
-     *     params : void.
-     *    returns : see above.
-     *     throws : LostCarrierException == on network errors...
-     */
     {
         try
         {
@@ -221,6 +258,16 @@ public abstract class SocketStream
     } // recv
 
 
+        /**
+         * Retrieve a line of text from socket. The line is delimited by
+         *  a carriage return (ASCII 13) byte sent through the socket.
+         *
+         * A maximum size of input is specified.
+         *
+         *   @param max Maximum characters to accept in String.
+         *  @return String of read bytes.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public String recvln(int max) throws LostCarrierException
     {
         StringBuffer strBuf = new StringBuffer();
@@ -263,20 +310,26 @@ public abstract class SocketStream
     } // recvln (takes maximum entry length)
 
 
+        /**
+         * Retrieve a line of text from socket. The line is delimited by
+         *  a carriage return (ASCII 13) byte sent through the socket.
+         *
+         *  @return String of read bytes.
+         *   @throw LostCarrierException if connection to user was lost.
+         */
     public String recvln() throws LostCarrierException
     {
         return(recvln(Integer.MAX_VALUE));
     } // recvln (default maximums)
 
 
+        /**
+         *  Find out if there's any user input waiting to be processed.
+         *
+         *   @return Number of bytes waiting.
+         *    @throw LostCarrierException if connection to user was lost.
+         */
     public int dataWaiting() throws LostCarrierException
-    /**
-     *  Find out if there's any user input waiting to be processed.
-     *
-     *     params : void.
-     *    returns : number of bytes waiting.
-     *     throws : LostCarrierException == on network errors...
-     */
     {
         try
         {
@@ -291,14 +344,12 @@ public abstract class SocketStream
     } // dataWaiting
 
 
+        /**
+         *  Throw out any characters waiting from the inputstream.
+         *
+         *    @throw LostCarrierException if connection to user was lost.
+         */
     public void clearBuffer() throws LostCarrierException
-    /**
-     *  Throw out any characters waiting from the inputstream.
-     *
-     *     params : void.
-     *    returns : void.
-     *     throws : LostCarrierException == on network errors...
-     */
     {
         int bytesWaiting;
         try
@@ -314,10 +365,10 @@ public abstract class SocketStream
     } // clearBuffer
 
 
+        /**
+         *  Close a socket. Disconnects user, and clears up resources.
+         */
     public void close()
-    /**
-     *  Close a socket. Disconnects user, and clears up resources.
-     */
     {
         try
         {
